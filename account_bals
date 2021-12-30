@@ -1,0 +1,7 @@
+select 
+  year, month, account, last(balance)
+where 
+  account = "{{ account }}"
+and
+  currency = 'AUD'
+group by year, month, account

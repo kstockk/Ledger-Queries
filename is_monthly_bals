@@ -1,0 +1,8 @@
+select
+  year, month, root(account, 1) as type, leaf(account) as category, sum(number) as total, currency, tags, account as full_account
+from
+    date >= {{ start_date }} and date <= {{ end_date }}
+where 
+    account ~ '^(Expenses|Income)' and not account ~ 'Super'
+group by year, month, root(account, 1), leaf(account), account, currency, tags
+order by year, month, sum(number), account
