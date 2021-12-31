@@ -27,7 +27,7 @@ CSV_FILE="${END_DATE}_is_monthly_bals.csv"
 BUDGET="Budget ${END_YEAR}.xlsx"
 WS="Transactions"
 
-if [ -f ${BEAN_DIR}/budget/${BUDGET} ] then
+if [ -f "${BEAN_DIR}/budget/${BUDGET}" ]; then
     python main.py "${BEAN_DIR}/queries/output/${CSV_FILE}" "${BEAN_DIR}/budget/${BUDGET}" "${WS}"
 
     echo "Budget transactions updated."
