@@ -78,7 +78,7 @@ fi
 
 echo "Running query:"
 echo ${QUERY}
-docker exec -it fava bean-query /bean/master.beancount ${QUERY} -f csv -o "/bean/queries/output/${FILENAME}.csv"
+docker exec fava bean-query /bean/master.beancount ${QUERY} -f csv -o "/bean/queries/output/${FILENAME}.csv"
 
 sudo chown 1000:1000 "${BEAN_DIR}/queries/output/${FILENAME}.csv"
 
