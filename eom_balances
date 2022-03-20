@@ -1,0 +1,4 @@
+SELECT '{{ eom }}' as month, account, convert(sum(position), 'AUD')
+FROM CLOSE ON {{ eom }} 
+WHERE ACCOUNT ~ '^(Liabilities|Assets)'
+GROUP BY month, account ORDER BY account;

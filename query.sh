@@ -11,7 +11,7 @@ help() {
     echo "Usage: $0 [ -q QUERY_FILE ] [ -s START_DATE ] [ -e END_DATE ]"
     echo "options:"
     echo "a     Specify a single account for the query"
-    echo "s     Specify the query_file (do not include the full directory path)"
+    echo "q     Specify the query_file (do not include the full directory path)"
     echo "s     Specify the start date for the query"
     echo "e     Specify the end date for the query"
     echo "h     Print this Help menu"
@@ -41,19 +41,24 @@ if [ ! ${QUERY_FILE} ]; then
 fi
 
 QUERY="$(<${BEAN_DIR}/queries/${QUERY_FILE})"
+FILENAME=${QUERY_FILE}
 
-if [[ ${QUERY} = *"_date }}"* ]]; then
+if [[ ${QUERY} = *"{{ start_date }}"* ]]; then
     if [ ! ${START_DATE} ]; then
         if (( $(date +%m) >= 7 )); then
             START_DATE=$(date +%Y)-07-01
         else
             START_DATE=$(date +%Y -d '-1 year')-07-01
         fi
-    elif ! date -d ${START_DATE} &> /dev/null; then
+    elif ! date -d ${} &> /dev/null; then
         echo "ERROR: start_date is not valid"
         exit_abnormal
     fi
+    QUERY="${QUERY//'{{ start_date }}'/"${START_DATE}"}"
+    FILENAME=${START_DATE}_${QUERY_FILE}
+fi
 
+if [[ ${QUERY} = *"{{ end_date }}"* ]]; then
     if [ ! ${END_DATE} ]; then
         if (( $(date +%m) >= 7 )); then
             END_DATE=$(date +%Y -d '1 year')-06-30
@@ -64,16 +69,21 @@ if [[ ${QUERY} = *"_date }}"* ]]; then
         echo "ERROR: end_date is not valid"
         exit_abnormal
     fi
-
-    QUERY="${QUERY/'{{ start_date }}'/"${START_DATE}"}"
-    QUERY="${QUERY/'{{ end_date }}'/"${END_DATE}"}"
+    QUERY="${QUERY//'{{ end_date }}'/"${END_DATE}"}"
     FILENAME=${END_DATE}_${QUERY_FILE}
-elif [[ ${QUERY} = *"{{ account }}"* ]]; then
-    QUERY="${QUERY/'{{ account }}'/"${ACCOUNT}"}"
+fi
+
+if [[ ${QUERY} = *"{{ account }}"* ]]; then
+    QUERY="${QUERY//'{{ account }}'/"${ACCOUNT}"}"
     FILENAME=${ACCOUNT/:/-}_${QUERY_FILE}
     MARK="1"
-else
-    FILENAME=${QUERY_FILE}
+fi
+
+if [[ ${QUERY} = *"{{ eom }}"* ]]; then
+    EOM=$(date -d "$(date +%Y-%m-01) +1 month -1 day" +%Y-%m-%d)
+    QUERY="${QUERY//'{{ eom }}'/"${EOM}"}"
+    FILENAME=${EOM}_${QUERY_FILE}
+    MARK="1"
 fi
 
 echo "Running query:"
