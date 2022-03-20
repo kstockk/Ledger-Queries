@@ -80,7 +80,7 @@ if [[ ${QUERY} = *"{{ account }}"* ]]; then
 fi
 
 if [[ ${QUERY} = *"{{ eom }}"* ]]; then
-    EOM=$(date -d "$(date +%Y-%m-01) +1 month -1 day" +%Y-%m-%d)
+    EOM=$(date -d "$(date +%Y-%m-01) +0 month -1 day" +%Y-%m-%d)
     QUERY="${QUERY//'{{ eom }}'/"${EOM}"}"
     FILENAME=${EOM}_${QUERY_FILE}
     MARK="1"
